@@ -6,6 +6,7 @@ const PropertySchema = z.object({
   description: z.string(),
   image: z.string(),
   pricePerNight: z.number(),
+  totalPricePerNight: z.number().optional(),
   amenities: z.record(z.string(), z.boolean()),
   rating: z.number(),
   reviews: z.number(),
