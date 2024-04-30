@@ -26,7 +26,7 @@ function SearchBar() {
 
   return (
     <div className="m-auto w-full pb-12 md:max-w-3xl">
-      <div className="flex h-20 w-full flex-1 gap-2 rounded-xl border border-zinc-200 p-2 shadow-lg">
+      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 p-2 shadow-lg sm:h-20 sm:flex-row">
         <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
           <Search className="mr-2 h-6 w-6 text-zinc-600" />
           <div className="flex-1">
@@ -34,7 +34,7 @@ function SearchBar() {
               Destination
             </span>
             <input
-              className="flex w-full border-0 bg-transparent p-0 text-base font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none"
+              className="flex h-6 w-full border-0 bg-transparent p-0 text-sm font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none"
               placeholder="New York"
             />
           </div>
@@ -50,7 +50,7 @@ function SearchBar() {
                 </span>
 
                 <span
-                  className={cn("flex text-base font-normal text-zinc-900", {
+                  className={cn("flex text-sm font-normal text-zinc-900", {
                     "text-zinc-400": !date?.from && !date?.to,
                   })}
                 >
@@ -92,7 +92,7 @@ function SearchBar() {
               <input
                 type="number"
                 className={cn(
-                  "ring--0 flex w-full border-0 bg-transparent p-0 text-base font-normal text-zinc-900 placeholder:text-zinc-400 focus-visible:outline-none",
+                  "flex h-6 w-full border-0 bg-transparent p-0 text-sm font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none",
                   "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                 )}
                 min={1}
@@ -102,11 +102,10 @@ function SearchBar() {
 
               <div className="flex flex-row items-center gap-1">
                 <Button className="h-6 w-6" variant="outline" size="icon">
-                  <Plus className="h-3 w-3" />
-                </Button>
-
-                <Button className="h-6 w-6" variant="outline" size="icon">
                   <Minus className="h-3 w-3" />
+                </Button>
+                <Button className="h-6 w-6" variant="outline" size="icon">
+                  <Plus className="h-3 w-3" />
                 </Button>
               </div>
             </div>
