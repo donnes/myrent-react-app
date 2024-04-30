@@ -6,8 +6,8 @@
 
 module.exports = {
   plugins: [
-    "prettier-plugin-tailwindcss",
     "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss",
   ],
   tailwindFunctions: ["cn", "cva"],
   importOrder: [
@@ -19,13 +19,13 @@ module.exports = {
     "^types$",
     "^@/types/(.*)$",
     "^@/config/(.*)$",
+    "^@/fixtures/(.*)$",
+    "^@/validators/(.*)$",
     "^@/lib/(.*)$",
     "^@/hooks/(.*)$",
+    "",
     "^@/components/ui/(.*)$",
     "^@/components/(.*)$",
-    "^@/registry/(.*)$",
-    "^@/styles/(.*)$",
-    "^@/app/(.*)$",
     "",
     "^[./]",
   ],
