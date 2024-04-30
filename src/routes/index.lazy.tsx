@@ -1,21 +1,20 @@
 import * as React from "react";
+import { properties } from "@/fixtures/data";
+import { Property } from "@/validators/property";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
 import { CalendarDays, Minus, Plus, Search, Star } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
 
-import { properties } from "@/fixtures/data";
 import { currency } from "@/lib/formats";
 import { cn } from "@/lib/utils";
-
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Property } from "@/validators/property";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
