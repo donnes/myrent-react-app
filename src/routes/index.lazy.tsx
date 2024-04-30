@@ -1,13 +1,14 @@
 import * as React from "react";
-import { properties } from "@/fixtures/data";
-import { Property } from "@/validators/property";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { CalendarDays, Minus, Plus, Search, Star } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
+import { Property } from "@/validators/property";
 import { currency } from "@/lib/formats";
 import { cn } from "@/lib/utils";
+import { useGetProperties } from "@/hooks/use-queries";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -163,12 +164,14 @@ function PropertyListItem({ property }: { property: Property }) {
 }
 
 function Index() {
+  const properties = useGetProperties();
+
   return (
     <div className="container max-w-screen-2xl py-8">
       <SearchBar />
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {properties.map((property) => (
+        {properties.data?.map((property) => (
           <PropertyListItem key={property.id} property={property} />
         ))}
       </div>
