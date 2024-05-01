@@ -31,7 +31,7 @@ export const FormSchema = z.object({
 
 export type FormData = z.infer<typeof FormSchema>;
 
-function Location({
+export function LocationControl({
   value,
   onChange,
 }: {
@@ -92,7 +92,7 @@ function Location({
   );
 
   return (
-    <label className="relative flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
+    <label className="relative flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
       <Search className="mr-2 h-6 w-6 text-zinc-600" />
       <div className="flex-1">
         <span className="pb-1 text-sm font-medium leading-none">
@@ -142,7 +142,7 @@ function Location({
   );
 }
 
-function RangeDates({
+export function RangeDatesControl({
   value,
   onChange,
 }: {
@@ -152,7 +152,7 @@ function RangeDates({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 data-[state=open]:bg-zinc-100">
+        <label className="flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 data-[state=open]:bg-zinc-100">
           <CalendarDays className="mr-2 h-6 w-6 text-zinc-600" />
           <div className="flex-1">
             <span className="pb-1 text-sm font-medium leading-none">
@@ -207,7 +207,7 @@ function RangeDates({
   );
 }
 
-function Guests({
+export function GuestsControl({
   value,
   onChange,
 }: {
@@ -229,11 +229,11 @@ function Guests({
   }, [value, onChange]);
 
   return (
-    <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
+    <label className="flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
       <Users className="mr-2 h-6 w-6 text-zinc-600" />
       <div className="flex-1">
         <span className="pb-1 text-sm font-medium leading-none">Guests</span>
-        <div className="flex flex-row items-center">
+        <div className="flex items-center">
           <input
             type="number"
             className={cn(
@@ -253,7 +253,7 @@ function Guests({
             placeholder="0"
           />
 
-          <div className="flex flex-row items-center gap-1">
+          <div className="flex items-center gap-1">
             <Button
               type="button"
               className="h-6 w-6"
@@ -317,11 +317,11 @@ export function SearchBar({
       onSubmit={form.handleSubmit(onSubmit)}
       className="m-auto w-full pb-12 md:max-w-3xl"
     >
-      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 p-2 shadow-lg sm:h-20 sm:flex-row">
+      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-2 shadow-lg sm:h-20 sm:flex-row">
         <Controller
           name="destination"
           control={form.control}
-          render={({ field }) => <Location {...field} />}
+          render={({ field }) => <LocationControl {...field} />}
         />
         <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
@@ -329,7 +329,7 @@ export function SearchBar({
         <Controller
           name="dates"
           control={form.control}
-          render={({ field }) => <RangeDates {...field} />}
+          render={({ field }) => <RangeDatesControl {...field} />}
         />
         <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
@@ -337,7 +337,7 @@ export function SearchBar({
         <Controller
           name="guests"
           control={form.control}
-          render={({ field }) => <Guests {...field} />}
+          render={({ field }) => <GuestsControl {...field} />}
         />
         <div className="flex h-full items-center justify-center">
           <Button
