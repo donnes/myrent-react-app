@@ -12,11 +12,17 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as PropertiesPropertyIdImport } from './routes/properties/$propertyId'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PropertiesPropertyIdRoute = PropertiesPropertyIdImport.update({
+  path: '/properties/$propertyId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -28,11 +34,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/properties/$propertyId': {
+      preLoaderRoute: typeof PropertiesPropertyIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute])
+export const routeTree = rootRoute.addChildren([
+  IndexRoute,
+  PropertiesPropertyIdRoute,
+])
 
 /* prettier-ignore-end */

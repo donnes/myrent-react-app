@@ -5,9 +5,10 @@ import { Command as CommandPrimitive } from "cmdk";
 import { format } from "date-fns";
 import { CalendarDays, Minus, Plus, Search, Users } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { destinations } from "@/fixtures/data";
-import { PropertySearch, PropertySearchSchema } from "@/validators/property";
+import { PropertySearch } from "@/validators/property";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+export const FormSchema = z.object({
+  destination: z.string().optional(),
+  dates: z.object({
+    to: z.date(),
+    from: z.date(),
+  }),
+  guests: z.number().min(1).optional(),
+});
+
+export type FormData = z.infer<typeof FormSchema>;
+
 function Location({
   value,
   onChange,
 }: {
-  value: PropertySearch["destination"];
+  value: FormData["destination"];
   onChange: (value: string) => void;
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -134,8 +146,8 @@ function RangeDates({
   value,
   onChange,
 }: {
-  value: PropertySearch["dates"];
-  onChange: (value: PropertySearch["dates"]) => void;
+  value: FormData["dates"];
+  onChange: (value: FormData["dates"]) => void;
 }) {
   return (
     <Popover>
@@ -172,21 +184,18 @@ function RangeDates({
         <Calendar
           initialFocus
           mode="range"
-          defaultMonth={new Date(value.from)}
-          selected={{
-            from: new Date(value.from),
-            to: new Date(value.to),
-          }}
+          defaultMonth={value.from}
+          selected={value}
           onSelect={(dates) => {
-            if (dates?.from && !dates.to) {
+            if (dates?.from && dates?.to) {
               onChange({
-                from: dates.from.toISOString(),
-                to: dates.from.toISOString(),
+                from: dates.from,
+                to: dates.to,
               });
-            } else if (dates?.from && dates?.to) {
+            } else if (dates?.from && !dates.to) {
               onChange({
-                from: dates.from.toISOString(),
-                to: dates.to.toISOString(),
+                from: dates.from,
+                to: dates.from,
               });
             }
           }}
@@ -202,8 +211,8 @@ function Guests({
   value,
   onChange,
 }: {
-  value: PropertySearch["guests"] | undefined;
-  onChange: (value: PropertySearch["guests"] | undefined) => void;
+  value: FormData["guests"] | undefined;
+  onChange: (value: FormData["guests"] | undefined) => void;
 }) {
   const onIncrement = React.useCallback(() => {
     if (!value) {
@@ -277,15 +286,29 @@ export function SearchBar({
 }) {
   const navigate = useNavigate();
 
-  const form = useForm<PropertySearch>({
-    resolver: zodResolver(PropertySearchSchema),
-    defaultValues: search ? search : {},
+  const form = useForm<FormData>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: search
+      ? {
+          destination: search.destination,
+          dates: {
+            from: search?.startDate ? new Date(search.startDate) : undefined,
+            to: search?.endDate ? new Date(search.endDate) : undefined,
+          },
+          guests: search.guests,
+        }
+      : {},
   });
 
-  function onSubmit(data: PropertySearch) {
+  function onSubmit(data: FormData) {
     navigate({
-      search: data,
       to: "/",
+      search: {
+        destination: data.destination,
+        startDate: data.dates.from,
+        endDate: data.dates.to,
+        guests: data.guests,
+      },
     });
   }
 

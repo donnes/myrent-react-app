@@ -9,7 +9,7 @@ import { SearchBar } from "@/components/composed/search-bar";
 
 export const Route = createFileRoute("/")({
   component: Index,
-  validateSearch: PropertySearchSchema.partial(),
+  validateSearch: PropertySearchSchema,
 });
 
 function PropertyListItem({ property }: { property: Property }) {

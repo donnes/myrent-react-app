@@ -7,9 +7,11 @@ export const Route = createRootRoute({
       <header className="sticky top-0 z-50 w-full border-b border-zinc-50/40 bg-zinc-50/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-50/80">
         <div className="container flex h-14 max-w-screen-2xl items-center">
           <div className="mr-4 hidden md:flex">
-            <div className="mr-6 flex items-center space-x-2">
-              <span className="font-mono text-2xl font-bold">MyRent</span>
-            </div>
+            <Link to="/">
+              <div className="mr-6 flex items-center space-x-2">
+                <span className="font-mono text-2xl font-bold">MyRent</span>
+              </div>
+            </Link>
             <nav className="flex items-center gap-4 text-sm lg:gap-6">
               <Link
                 to="/"

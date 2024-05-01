@@ -19,8 +19,8 @@ export function useGetProperties(
   async function queryFn() {
     await delay();
 
-    if (params && params.dates) {
-      const nights = differenceInDays(params.dates.to, params.dates.from);
+    if (params && params.startDate && params.endDate) {
+      const nights = differenceInDays(params.endDate, params.startDate);
 
       return properties
         .filter((p) => {
