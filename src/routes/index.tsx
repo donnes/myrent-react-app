@@ -1,13 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { Star } from "lucide-react";
-import { FormProvider, useForm } from "react-hook-form";
 
-import {
-  Property,
-  PropertySearch,
-  PropertySearchSchema,
-} from "@/validators/property";
+import { Property, PropertySearchSchema } from "@/validators/property";
 import { currency } from "@/lib/formats";
 import { useGetProperties } from "@/hooks/use-queries";
 
@@ -15,6 +9,7 @@ import { SearchBar } from "@/components/composed/search-bar";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  validateSearch: PropertySearchSchema.partial(),
 });
 
 function PropertyListItem({ property }: { property: Property }) {
@@ -54,10 +49,23 @@ function PropertyListItem({ property }: { property: Property }) {
           {property.title}
         </h2>
         <div className="flex flex-row gap-x-1">
-          <data value={property.pricePerNight} className="font-semibold">
-            {currency(property.pricePerNight)}
-          </data>
-          <span>night</span>
+          <div className="flex flex-row gap-x-1">
+            <data value={property.pricePerNight} className="font-semibold">
+              {currency(property.pricePerNight)}
+            </data>
+            <span>night</span>
+          </div>
+          {property.totalPricePerNight && (
+            <>
+              <span>•</span>
+              <div className="flex flex-row gap-x-1 text-zinc-500">
+                <data value={property.totalPricePerNight}>
+                  {currency(property.totalPricePerNight)}
+                </data>
+                <span>total</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -65,23 +73,13 @@ function PropertyListItem({ property }: { property: Property }) {
 }
 
 function Index() {
-  const searchForm = useForm<PropertySearch>({
-    resolver: zodResolver(PropertySearchSchema),
-  });
+  const search = Route.useSearch();
 
-  const properties = useGetProperties();
-
-  function onSearchSubmit(data: PropertySearch) {
-    console.log(data);
-  }
+  const properties = useGetProperties(search);
 
   return (
     <div className="container max-w-screen-2xl py-8">
-      <FormProvider {...searchForm}>
-        <form onSubmit={searchForm.handleSubmit(onSearchSubmit)}>
-          <SearchBar />
-        </form>
-      </FormProvider>
+      <SearchBar search={search} />
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {properties.data?.map((property) => (

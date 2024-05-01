@@ -23,12 +23,12 @@ const PropertySchema = z.object({
 export type Property = z.infer<typeof PropertySchema>;
 
 export const PropertySearchSchema = z.object({
-  destination: z.string(),
+  destination: z.string().optional(),
   dates: z.object({
-    from: z.date(),
-    to: z.date(),
+    from: z.string(),
+    to: z.string(),
   }),
-  guests: z.number().min(1),
+  guests: z.number().min(1).optional(),
 });
 
 export type PropertySearch = z.infer<typeof PropertySearchSchema>;

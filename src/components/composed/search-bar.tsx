@@ -1,11 +1,13 @@
 import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@tanstack/react-router";
 import { Command as CommandPrimitive } from "cmdk";
 import { format } from "date-fns";
 import { CalendarDays, Minus, Plus, Search, Users } from "lucide-react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { destinations } from "@/fixtures/data";
-import { PropertySearch } from "@/validators/property";
+import { PropertySearch, PropertySearchSchema } from "@/validators/property";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -21,7 +23,7 @@ function Location({
   value,
   onChange,
 }: {
-  value: string;
+  value: PropertySearch["destination"];
   onChange: (value: string) => void;
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -100,7 +102,7 @@ function Location({
                 <CommandList className="max-h-[305px] p-1.5">
                   {destinations
                     .filter(({ label }) =>
-                      isSearching ? label.includes(value) : true,
+                      isSearching ? label.includes(value ?? "") : true,
                     )
                     .map((destination) => {
                       return (
@@ -170,13 +172,22 @@ function RangeDates({
         <Calendar
           initialFocus
           mode="range"
-          defaultMonth={value?.from}
-          selected={value}
+          defaultMonth={new Date(value.from)}
+          selected={{
+            from: new Date(value.from),
+            to: new Date(value.to),
+          }}
           onSelect={(dates) => {
             if (dates?.from && !dates.to) {
-              onChange({ from: dates.from, to: dates.from });
+              onChange({
+                from: dates.from.toISOString(),
+                to: dates.from.toISOString(),
+              });
             } else if (dates?.from && dates?.to) {
-              onChange({ from: dates.from, to: dates.to });
+              onChange({
+                from: dates.from.toISOString(),
+                to: dates.to.toISOString(),
+              });
             }
           }}
           numberOfMonths={2}
@@ -235,6 +246,7 @@ function Guests({
 
           <div className="flex flex-row items-center gap-1">
             <Button
+              type="button"
               className="h-6 w-6"
               onClick={onDecrement}
               variant="outline"
@@ -243,6 +255,7 @@ function Guests({
               <Minus className="h-3 w-3" />
             </Button>
             <Button
+              type="button"
               className="h-6 w-6"
               onClick={onIncrement}
               variant="outline"
@@ -257,18 +270,37 @@ function Guests({
   );
 }
 
-export function SearchBar() {
-  const form = useFormContext<PropertySearch>();
+export function SearchBar({
+  search,
+}: {
+  search: Partial<PropertySearch> | undefined;
+}) {
+  const navigate = useNavigate();
+
+  const form = useForm<PropertySearch>({
+    resolver: zodResolver(PropertySearchSchema),
+    defaultValues: search ? search : {},
+  });
+
+  function onSubmit(data: PropertySearch) {
+    navigate({
+      search: data,
+      to: "/",
+    });
+  }
 
   return (
-    <div className="m-auto w-full pb-12 md:max-w-3xl">
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="m-auto w-full pb-12 md:max-w-3xl"
+    >
       <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 p-2 shadow-lg sm:h-20 sm:flex-row">
         <Controller
           name="destination"
           control={form.control}
           render={({ field }) => <Location {...field} />}
         />
-        <div className="flex h-full w-px items-center">
+        <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
         </div>
         <Controller
@@ -276,7 +308,7 @@ export function SearchBar() {
           control={form.control}
           render={({ field }) => <RangeDates {...field} />}
         />
-        <div className="flex h-full w-px items-center">
+        <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
         </div>
         <Controller
@@ -285,11 +317,15 @@ export function SearchBar() {
           render={({ field }) => <Guests {...field} />}
         />
         <div className="flex h-full items-center justify-center">
-          <Button type="submit" disabled={!form.formState.isValid}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!form.formState.isValid}
+          >
             Search
           </Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 }

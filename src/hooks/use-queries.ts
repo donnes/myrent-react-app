@@ -1,7 +1,8 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { differenceInDays } from "date-fns";
 
 import { properties } from "@/fixtures/data";
-import { Property } from "@/validators/property";
+import { Property, PropertySearch } from "@/validators/property";
 
 export const queryKeys = {
   getProperties: "get-properties",
@@ -11,14 +12,43 @@ export const queryKeys = {
 const delay = async () =>
   new Promise((r) => setTimeout(r, Math.round(Math.random() * 500)));
 
-export function useGetProperties(options?: UseQueryOptions<Array<Property>>) {
+export function useGetProperties(
+  params?: Partial<PropertySearch>,
+  options?: UseQueryOptions<Array<Property>>,
+) {
   async function queryFn() {
     await delay();
+
+    if (params && params.dates) {
+      const nights = differenceInDays(params.dates.to, params.dates.from);
+
+      return properties
+        .filter((p) => {
+          const { city, state, country } = p.location;
+          const fullLocation = `${city}, ${state}, ${country}`;
+          let filter = true;
+
+          if (params.guests && params.guests > p.guests) {
+            filter = false;
+          }
+
+          if (params.destination && fullLocation !== params.destination) {
+            filter = false;
+          }
+
+          return filter;
+        })
+        .map((p) => ({
+          ...p,
+          totalPricePerNight: p.pricePerNight * nights,
+        }));
+    }
+
     return properties;
   }
 
   return useQuery({
-    queryKey: [queryKeys.getProperties],
+    queryKey: [queryKeys.getProperties, params],
     queryFn,
     ...options,
   });
