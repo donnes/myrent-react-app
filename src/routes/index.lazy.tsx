@@ -1,120 +1,21 @@
-import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { format } from "date-fns";
-import { CalendarDays, Minus, Plus, Search, Star } from "lucide-react";
-import { DateRange } from "react-day-picker";
+import { Star } from "lucide-react";
+import { FormProvider, useForm } from "react-hook-form";
 
-import { Property } from "@/validators/property";
+import {
+  Property,
+  PropertySearch,
+  PropertySearchSchema,
+} from "@/validators/property";
 import { currency } from "@/lib/formats";
-import { cn } from "@/lib/utils";
 import { useGetProperties } from "@/hooks/use-queries";
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { SearchBar } from "@/components/composed/search-bar";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
-
-function SearchBar() {
-  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
-
-  return (
-    <div className="m-auto w-full pb-12 md:max-w-3xl">
-      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 p-2 shadow-lg sm:h-20 sm:flex-row">
-        <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
-          <Search className="mr-2 h-6 w-6 text-zinc-600" />
-          <div className="flex-1">
-            <span className="pb-1 text-sm font-medium leading-none">
-              Destination
-            </span>
-            <input
-              className="flex h-6 w-full border-0 bg-transparent p-0 text-sm font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none"
-              placeholder="New York"
-            />
-          </div>
-        </label>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 data-[state=open]:bg-zinc-100">
-              <CalendarDays className="mr-2 h-6 w-6 text-zinc-600" />
-              <div className="flex-1">
-                <span className="pb-1 text-sm font-medium leading-none">
-                  Check in - Check out
-                </span>
-
-                <span
-                  className={cn("flex text-sm font-normal text-zinc-900", {
-                    "text-zinc-400": !date?.from && !date?.to,
-                  })}
-                >
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "dd/MM/yyyy")} -{" "}
-                        {format(date.to, "dd/MM/yyyy")}
-                      </>
-                    ) : (
-                      format(date.from, "dd/MM/yyyy")
-                    )
-                  ) : (
-                    "Add dates"
-                  )}
-                </span>
-              </div>
-            </label>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
-              numberOfMonths={2}
-              disabled={(date) => date < new Date()}
-            />
-          </PopoverContent>
-        </Popover>
-        <label className="flex flex-1 cursor-pointer flex-row items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
-          <CalendarDays className="mr-2 h-6 w-6 text-zinc-600" />
-          <div className="flex-1">
-            <span className="pb-1 text-sm font-medium leading-none">
-              Guests
-            </span>
-            <div className="flex flex-row items-center">
-              <input
-                type="number"
-                className={cn(
-                  "flex h-6 w-full border-0 bg-transparent p-0 text-sm font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none",
-                  "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-                )}
-                min={1}
-                step={1}
-                placeholder="0"
-              />
-
-              <div className="flex flex-row items-center gap-1">
-                <Button className="h-6 w-6" variant="outline" size="icon">
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <Button className="h-6 w-6" variant="outline" size="icon">
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </label>
-      </div>
-    </div>
-  );
-}
 
 function PropertyListItem({ property }: { property: Property }) {
   return (
@@ -164,11 +65,23 @@ function PropertyListItem({ property }: { property: Property }) {
 }
 
 function Index() {
+  const searchForm = useForm<PropertySearch>({
+    resolver: zodResolver(PropertySearchSchema),
+  });
+
   const properties = useGetProperties();
+
+  function onSearchSubmit(data: PropertySearch) {
+    console.log(data);
+  }
 
   return (
     <div className="container max-w-screen-2xl py-8">
-      <SearchBar />
+      <FormProvider {...searchForm}>
+        <form onSubmit={searchForm.handleSubmit(onSearchSubmit)}>
+          <SearchBar />
+        </form>
+      </FormProvider>
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {properties.data?.map((property) => (
