@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -13,7 +13,7 @@ import { useGetProperties } from "@/hooks/use-queries";
 
 import { SearchBar } from "@/components/composed/search-bar";
 
-export const Route = createLazyFileRoute("/")({
+export const Route = createFileRoute("/")({
   component: Index,
 });
 
