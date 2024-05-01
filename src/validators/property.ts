@@ -21,3 +21,14 @@ const PropertySchema = z.object({
 });
 
 export type Property = z.infer<typeof PropertySchema>;
+
+export const PropertySearchSchema = z.object({
+  destination: z.string(),
+  dates: z.object({
+    from: z.date(),
+    to: z.date(),
+  }),
+  guests: z.number().min(1),
+});
+
+export type PropertySearch = z.infer<typeof PropertySearchSchema>;
