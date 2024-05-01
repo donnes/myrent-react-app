@@ -31,12 +31,12 @@ export function PropertyListItem({ property }: { property: Property }) {
         </picture>
       </div>
       <div className="pt-4">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex items-center justify-between">
           <h3 className="font-semibold">
             {property.location.city}, {property.location.state}
           </h3>
 
-          <div className="flex flex-row items-center gap-x-1">
+          <div className="flex items-center gap-x-1">
             <Star className="h-4 w-4 fill-zinc-800 text-zinc-800" />
             <span>
               {property.rating} ({property.reviews})
@@ -46,8 +46,8 @@ export function PropertyListItem({ property }: { property: Property }) {
         <h2 className="line-clamp-2 truncate text-lg text-zinc-500 transition-colors group-hover:text-zinc-900">
           {property.title}
         </h2>
-        <div className="flex flex-row gap-x-1">
-          <div className="flex flex-row gap-x-1">
+        <div className="flex gap-x-1">
+          <div className="flex items-baseline gap-x-1">
             <data value={property.pricePerNight} className="font-semibold">
               {currency(property.pricePerNight)}
             </data>
@@ -56,7 +56,7 @@ export function PropertyListItem({ property }: { property: Property }) {
           {property.totalPricePerNight && (
             <>
               <span>•</span>
-              <div className="flex flex-row gap-x-1 text-zinc-500">
+              <div className="flex gap-x-1 text-zinc-500">
                 <data value={property.totalPricePerNight}>
                   {currency(property.totalPricePerNight)}
                 </data>
