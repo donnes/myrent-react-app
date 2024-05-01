@@ -6,6 +6,7 @@ import { Property, PropertySearch } from "@/validators/property";
 
 export const queryKeys = {
   getProperties: "get-properties",
+  getProperty: "get-property",
 };
 
 // Simulate API round trip latency
@@ -51,5 +52,17 @@ export function useGetProperties(
     queryKey: [queryKeys.getProperties, params],
     queryFn,
     ...options,
+  });
+}
+
+export function useGetProperty(id: string) {
+  async function queryFn() {
+    await delay();
+    return properties.find((p) => p.id === id);
+  }
+
+  return useQuery({
+    queryKey: [queryKeys.getProperty, id],
+    queryFn,
   });
 }
