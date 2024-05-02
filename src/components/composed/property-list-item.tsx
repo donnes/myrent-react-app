@@ -65,21 +65,21 @@ export function PropertyListItem({ property }: { property: Property }) {
           {property.title}
         </h2>
         <div className="flex gap-x-1">
-          <div className="flex items-baseline gap-x-1">
-            <data value={property.pricePerNight} className="font-semibold">
+          <data value={property.pricePerNight}>
+            <span className="font-semibold">
               {currency(property.pricePerNight)}
-            </data>
-            <span>night</span>
-          </div>
+            </span>{" "}
+            night
+          </data>
           {property.totalPricePerNight && (
             <>
               <span>•</span>
-              <div className="flex gap-x-1 text-zinc-500">
-                <data value={property.totalPricePerNight}>
-                  {currency(property.totalPricePerNight)}
-                </data>
-                <span>total</span>
-              </div>
+              <data
+                value={property.totalPricePerNight}
+                className="text-zinc-500"
+              >
+                {currency(property.totalPricePerNight)} total
+              </data>
             </>
           )}
         </div>
