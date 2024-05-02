@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { addDays, differenceInDays } from "date-fns";
 import { Star } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 
 import { amenitiesDictionary } from "@/fixtures/dictionaries";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/validators/booking";
 import { Property } from "@/validators/property";
 import { currency } from "@/lib/formats";
+import { useCreateBooking } from "@/hooks/use-mutations";
 import { useGetProperty } from "@/hooks/use-queries";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,8 @@ export const Route = createFileRoute("/properties/$propertyId")({
 });
 
 function BookingBox({ property }: { property: Property }) {
+  const mutation = useCreateBooking();
+
   const form = useForm<CreateBooking>({
     resolver: zodResolver(CreateBookingSchema),
     defaultValues: {
@@ -60,14 +64,24 @@ function BookingBox({ property }: { property: Property }) {
       : 0;
   }, [guests, property]);
 
+  const subTotalPrice = property.pricePerNight * daysCount;
+  const totalPrice = subTotalPrice + extraGuestsFee;
+
   React.useEffect(() => {
     if (daysCount > 0) {
-      form.setValue(
-        "totalPrice",
-        property.pricePerNight * daysCount * extraGuestsFee,
-      );
+      form.setValue("totalPrice", totalPrice);
     }
-  }, [form, property, daysCount, extraGuestsFee]);
+  }, [form, daysCount, totalPrice]);
+
+  function onSubmit(data: CreateBooking) {
+    const promise = mutation.mutateAsync(data);
+
+    toast.promise(promise, {
+      loading: "Booking your reservation...",
+      success: () => "Your reservation has been booked successfully!",
+      error: mutation.error?.message,
+    });
+  }
 
   return (
     <div className="sticky top-20 hidden rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-lg md:block">
@@ -83,7 +97,10 @@ function BookingBox({ property }: { property: Property }) {
         <li>{property.bathrooms} baths</li>
       </ol>
 
-      <div className="flex flex-col gap-y-2 pb-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-y-2 pb-4"
+      >
         <Controller
           name="dates"
           control={form.control}
@@ -105,18 +122,15 @@ function BookingBox({ property }: { property: Property }) {
         >
           Reserve
         </Button>
-      </div>
+      </form>
 
       <ul className="flex flex-col gap-y-2">
         <li className="flex items-center justify-between">
           <span className="text-zinc-600 underline">
             {currency(property.pricePerNight)} x {daysCount} nights
           </span>
-          <data
-            value={property.pricePerNight * daysCount}
-            className="font-medium"
-          >
-            {currency(property.pricePerNight * daysCount)}
+          <data value={subTotalPrice} className="font-medium">
+            {currency(subTotalPrice)}
           </data>
         </li>
         {extraGuestsFee > 0 && (
@@ -133,9 +147,7 @@ function BookingBox({ property }: { property: Property }) {
 
       <div className="flex items-center justify-between font-bold">
         <span>Total</span>
-        <data value={property.pricePerNight * daysCount}>
-          {currency(property.pricePerNight * daysCount)}
-        </data>
+        <data value={totalPrice}>{currency(totalPrice)}</data>
       </div>
     </div>
   );
