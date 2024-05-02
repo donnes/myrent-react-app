@@ -1,36 +1,40 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { areIntervalsOverlapping } from "date-fns";
 
-import { CreateBooking, UpdateBooking } from "@/validators/booking";
+import { BookingForm } from "@/validators/booking";
 import { delay } from "@/lib/utils";
 
 import { useGlobalStore } from "./use-global-store";
 import { queryKeys } from "./use-queries";
 
 export function useCreateBooking() {
+  const queryClient = useQueryClient();
   const { bookings, createBooking } = useGlobalStore();
 
-  async function mutationFn(data: CreateBooking) {
-    const booking = bookings.find(
-      ({ property }) => property.id === data.propertyId,
-    );
+  async function mutationFn(data: BookingForm) {
+    const dataInterval = { start: data.dates.from, end: data.dates.to };
 
-    if (booking) {
+    const overlappingBookings = bookings.filter(({ dates }) => {
       const bookingInterval = {
-        start: booking.dates.from,
-        end: booking.dates.to,
+        start: dates.from,
+        end: dates.to,
       };
-      const dataInterval = { start: data.dates.from, end: data.dates.to };
 
-      if (areIntervalsOverlapping(bookingInterval, dataInterval)) {
-        throw new Error("Date range already booked.");
-      }
+      return areIntervalsOverlapping(bookingInterval, dataInterval);
+    });
+
+    if (overlappingBookings.length > 0) {
+      throw new Error("Date range already booked.");
     }
+
+    createBooking(data);
 
     // Simulate API request
     await delay();
 
-    createBooking(data);
+    queryClient.refetchQueries({
+      queryKey: [queryKeys.getBookings],
+    });
   }
 
   return useMutation({
@@ -39,29 +43,38 @@ export function useCreateBooking() {
 }
 
 export function useUpdateBooking() {
+  const queryClient = useQueryClient();
   const { bookings, updateBooking } = useGlobalStore();
 
-  async function mutationFn({ id, data }: { id: string; data: UpdateBooking }) {
-    const booking = bookings.find(
-      ({ property }) => property.id === data.propertyId,
-    );
+  async function mutationFn({ id, data }: { id: string; data: BookingForm }) {
+    const dataInterval = { start: data.dates.from, end: data.dates.to };
 
-    if (booking && data.dates) {
-      const bookingInterval = {
-        start: booking.dates.from,
-        end: booking.dates.to,
-      };
-      const dataInterval = { start: data.dates.from, end: data.dates.to };
+    // As we're updating a booking
+    // we don't want to include the booking itself
+    // in the overlapping validation
+    const overlappingBookings = bookings
+      .filter((booking) => booking.id !== id)
+      .filter(({ dates }) => {
+        const bookingInterval = {
+          start: dates.from,
+          end: dates.to,
+        };
 
-      if (areIntervalsOverlapping(bookingInterval, dataInterval)) {
-        throw new Error("Date range already booked.");
-      }
+        return areIntervalsOverlapping(bookingInterval, dataInterval);
+      });
+
+    if (overlappingBookings.length > 0) {
+      throw new Error("Date range already booked.");
     }
+
+    updateBooking(id, data);
 
     // Simulate API request
     await delay();
 
-    updateBooking(id, data);
+    queryClient.refetchQueries({
+      queryKey: [queryKeys.getBookings],
+    });
   }
 
   return useMutation({
