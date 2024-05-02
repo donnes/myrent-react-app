@@ -1,163 +1,19 @@
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
-import { addDays, differenceInDays } from "date-fns";
 import { Star } from "lucide-react";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
 
 import { amenitiesDictionary } from "@/fixtures/dictionaries";
-import {
-  CreateBooking,
-  CreateBookingSchema,
-  EXTRA_GUESTS_FEE,
-} from "@/validators/booking";
-import { Property } from "@/validators/property";
 import { currency } from "@/lib/formats";
-import { useCreateBooking } from "@/hooks/use-mutations";
 import { useGetProperty } from "@/hooks/use-queries";
 
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BookingForm } from "@/components/composed/booking-from";
 import { AmenitiesIcon } from "@/components/composed/property-icons";
-import {
-  GuestsControl,
-  RangeDatesControl,
-} from "@/components/composed/search-bar";
 
 export const Route = createFileRoute("/properties/$propertyId")({
   component: PropertyPage,
 });
-
-function BookingBox({ property }: { property: Property }) {
-  const mutation = useCreateBooking();
-
-  const form = useForm<CreateBooking>({
-    resolver: zodResolver(CreateBookingSchema),
-    defaultValues: {
-      propertyId: property.id,
-      dates: {
-        from: addDays(new Date(), 1),
-        to: addDays(new Date(), 7),
-      },
-      guests: 1,
-    },
-  });
-
-  const dates = useWatch({
-    control: form.control,
-    name: "dates",
-  });
-
-  const guests = useWatch({
-    control: form.control,
-    name: "guests",
-  });
-
-  const daysCount = React.useMemo(() => {
-    return differenceInDays(dates.to, dates.from);
-  }, [dates]);
-
-  const extraGuestsFee = React.useMemo(() => {
-    return guests > property.guests
-      ? (guests - property.guests) * EXTRA_GUESTS_FEE
-      : 0;
-  }, [guests, property]);
-
-  const subTotalPrice = property.pricePerNight * daysCount;
-  const totalPrice = subTotalPrice + extraGuestsFee;
-
-  React.useEffect(() => {
-    if (daysCount > 0) {
-      form.setValue("totalPrice", totalPrice);
-    }
-  }, [form, daysCount, totalPrice]);
-
-  function onSubmit(data: CreateBooking) {
-    const promise = mutation.mutateAsync(data);
-
-    toast.promise(promise, {
-      loading: "Booking your reservation...",
-      success: () => "Your reservation has been booked successfully!",
-      error: mutation.error?.message,
-    });
-  }
-
-  return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-lg">
-      <h2 className="pb-1 font-medium leading-tight">
-        {property.location.city}, {property.location.state}
-      </h2>
-
-      <ol className="flex gap-x-1 pb-4 text-sm text-zinc-600">
-        <li>{property.guests} guests</li>
-        <li aria-hidden="true">·</li>
-        <li>{property.bedrooms} bedrooms</li>
-        <span aria-hidden="true">·</span>
-        <li>{property.bathrooms} baths</li>
-      </ol>
-
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-y-2 pb-4"
-      >
-        <Controller
-          name="dates"
-          control={form.control}
-          render={({ field }) => (
-            <RangeDatesControl
-              value={{
-                from: new Date(field.value.from),
-                to: new Date(field.value.to),
-              }}
-              onChange={field.onChange}
-            />
-          )}
-        />
-        <Controller
-          name="guests"
-          control={form.control}
-          render={({ field }) => (
-            <GuestsControl value={field.value} onChange={field.onChange} />
-          )}
-        />
-        <Button
-          className="w-full"
-          size="lg"
-          disabled={form.formState.isSubmitting}
-        >
-          Reserve
-        </Button>
-      </form>
-
-      <ul className="flex flex-col gap-y-2">
-        <li className="flex items-center justify-between">
-          <span className="text-zinc-600 underline">
-            {currency(property.pricePerNight)} x {daysCount} nights
-          </span>
-          <data value={subTotalPrice} className="font-medium">
-            {currency(subTotalPrice)}
-          </data>
-        </li>
-        {extraGuestsFee > 0 && (
-          <li className="flex items-center justify-between">
-            <span className="text-zinc-600 underline">Extra guests fee</span>
-            <data value={extraGuestsFee} className="font-medium">
-              {currency(extraGuestsFee)}
-            </data>
-          </li>
-        )}
-      </ul>
-
-      <hr className="my-6 border-zinc-200" />
-
-      <div className="flex items-center justify-between font-bold">
-        <span>Total</span>
-        <data value={totalPrice}>{currency(totalPrice)}</data>
-      </div>
-    </div>
-  );
-}
 
 function PropertyPageSkeleton() {
   return (
@@ -251,7 +107,7 @@ function PropertyPage() {
             </div>
             <div className="pb-4">
               <h3 className="pb-1 text-lg font-medium">Amenities</h3>
-              <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <ul className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {Object.entries(property.data.amenities)
                   .filter(([, value]) => value)
                   .map(([key]) => {
@@ -270,7 +126,9 @@ function PropertyPage() {
           </div>
           <div>
             <div className="sticky top-20 hidden w-80 md:flex">
-              <BookingBox property={property.data} />
+              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-lg">
+                <BookingForm property={property.data} />
+              </div>
             </div>
           </div>
         </div>
@@ -284,9 +142,18 @@ function PropertyPage() {
             </span>{" "}
             night
           </data>
-          <Button type="button" size="lg">
-            Reserve
-          </Button>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button type="button" size="lg">
+                Reserve
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <div className="p-4">
+                <BookingForm property={property.data} />
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
     </>
