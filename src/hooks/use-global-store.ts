@@ -3,12 +3,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { properties } from "@/fixtures/data";
-import { Booking, CreateBooking, UpdateBooking } from "@/validators/booking";
+import { Booking, BookingForm } from "@/validators/booking";
 
 interface GlobalState {
   bookings: Array<Booking>;
-  createBooking: (booking: CreateBooking) => void;
-  updateBooking: (id: string, booking: UpdateBooking) => void;
+  createBooking: (booking: BookingForm) => void;
+  updateBooking: (id: string, booking: BookingForm) => void;
   deleteBooking: (id: string) => void;
 }
 
@@ -33,8 +33,7 @@ export const useGlobalStore = create<GlobalState>()(
         }));
       },
       updateBooking(id, updatedBooking) {
-        delete updatedBooking.propertyId;
-
+        delete updatedBooking.id;
         return set((state) => ({
           bookings: state.bookings.map((booking) => {
             if (booking.id === id) {

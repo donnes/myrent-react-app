@@ -17,15 +17,11 @@ export const BookingSchema = z.object({
 
 export type Booking = z.infer<typeof BookingSchema>;
 
-export const CreateBookingSchema = BookingSchema.omit({
-  id: true,
+export const BookingFormSchema = BookingSchema.omit({
   property: true,
 }).extend({
+  id: z.string().uuid().optional(),
   propertyId: z.string().uuid(),
 });
 
-export type CreateBooking = z.infer<typeof CreateBookingSchema>;
-
-export const UpdateBookingSchema = CreateBookingSchema.partial();
-
-export type UpdateBooking = z.infer<typeof UpdateBookingSchema>;
+export type BookingForm = z.infer<typeof BookingFormSchema>;
