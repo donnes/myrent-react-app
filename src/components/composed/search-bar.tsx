@@ -321,7 +321,9 @@ export function SearchBar({
         <Controller
           name="destination"
           control={form.control}
-          render={({ field }) => <LocationControl {...field} />}
+          render={({ field }) => (
+            <LocationControl value={field.value} onChange={field.onChange} />
+          )}
         />
         <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
@@ -329,7 +331,9 @@ export function SearchBar({
         <Controller
           name="dates"
           control={form.control}
-          render={({ field }) => <RangeDatesControl {...field} />}
+          render={({ field }) => (
+            <RangeDatesControl value={field.value} onChange={field.onChange} />
+          )}
         />
         <div className="hidden h-full w-px items-center md:flex">
           <div className="h-10 w-px bg-zinc-200">&nbsp;</div>
@@ -337,7 +341,9 @@ export function SearchBar({
         <Controller
           name="guests"
           control={form.control}
-          render={({ field }) => <GuestsControl {...field} />}
+          render={({ field }) => (
+            <GuestsControl value={field.value} onChange={field.onChange} />
+          )}
         />
         <div className="flex h-full items-center justify-center">
           <Button

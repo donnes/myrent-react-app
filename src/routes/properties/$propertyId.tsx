@@ -87,12 +87,16 @@ function BookingBox({ property }: { property: Property }) {
         <Controller
           name="dates"
           control={form.control}
-          render={({ field }) => <RangeDatesControl {...field} />}
+          render={({ field }) => (
+            <RangeDatesControl value={field.value} onChange={field.onChange} />
+          )}
         />
         <Controller
           name="guests"
           control={form.control}
-          render={({ field }) => <GuestsControl {...field} />}
+          render={({ field }) => (
+            <GuestsControl value={field.value} onChange={field.onChange} />
+          )}
         />
         <Button
           className="w-full"
@@ -139,7 +143,7 @@ function BookingBox({ property }: { property: Property }) {
 
 function PropertyPageSkeleton() {
   return (
-    <div className="container max-w-screen-2xl py-8">
+    <div className="container max-w-screen-xl py-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto]">
         <div className="flex flex-col gap-y-4">
           <Skeleton className="aspect-video overflow-hidden rounded-xl" />
@@ -178,7 +182,7 @@ function PropertyPage() {
   }
 
   return (
-    <div className="container max-w-screen-2xl py-8">
+    <div className="container max-w-screen-xl py-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[auto_1fr]">
         <div className="flex flex-col gap-y-4">
           <div className="aspect-video overflow-hidden rounded-xl">
