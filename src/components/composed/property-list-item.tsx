@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function PropertyListItemSkeleton() {
   return (
     <div className="p-2">
-      <Skeleton className="aspect-square overflow-hidden rounded-xl" />
+      <Skeleton className="aspect-square overflow-hidden rounded-lg" />
       <div className="pt-4">
         <div className="mb-2 flex items-center justify-between">
           <Skeleton className="h-5 w-36" />
@@ -29,9 +29,9 @@ export function PropertyListItem({ property }: { property: Property }) {
       params={{
         propertyId: property.id,
       }}
-      className="group cursor-pointer rounded-xl p-2 transition-colors hover:bg-white"
+      className="group cursor-pointer rounded-2xl p-2 transition-colors hover:bg-white"
     >
-      <div className="aspect-square overflow-hidden rounded-xl">
+      <div className="aspect-square overflow-hidden rounded-lg">
         <picture>
           <source
             media="(max-width: 799px)"

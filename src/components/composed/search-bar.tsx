@@ -1,6 +1,7 @@
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
+import { useMediaQuery } from "@uidotdev/usehooks";
 import { Command as CommandPrimitive } from "cmdk";
 import { format } from "date-fns";
 import { CalendarDays, Minus, Plus, Search, Users } from "lucide-react";
@@ -149,6 +150,8 @@ export function RangeDatesControl({
   value: FormData["dates"];
   onChange: (value: FormData["dates"]) => void;
 }) {
+  const isDesktop = useMediaQuery("only screen and (min-width : 768px)");
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -199,7 +202,7 @@ export function RangeDatesControl({
               });
             }
           }}
-          numberOfMonths={2}
+          numberOfMonths={isDesktop ? 2 : 1}
           disabled={(date) => date < new Date()}
         />
       </PopoverContent>

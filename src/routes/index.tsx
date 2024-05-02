@@ -23,7 +23,7 @@ function Index() {
     <div className="container max-w-screen-xl py-8">
       <SearchBar search={search} />
 
-      <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {properties.isLoading
           ? Array.from({ length: 10 }).map((_, index) => (
               <PropertyListItemSkeleton
