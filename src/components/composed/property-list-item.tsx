@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function PropertyListItemSkeleton() {
   return (
-    <div>
+    <div className="p-2">
       <Skeleton className="aspect-square overflow-hidden rounded-xl" />
       <div className="pt-4">
         <div className="mb-2 flex items-center justify-between">
@@ -29,7 +29,7 @@ export function PropertyListItem({ property }: { property: Property }) {
       params={{
         propertyId: property.id,
       }}
-      className="group cursor-pointer"
+      className="group cursor-pointer rounded-xl p-2 transition-colors hover:bg-white"
     >
       <div className="aspect-square overflow-hidden rounded-xl">
         <picture>

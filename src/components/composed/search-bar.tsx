@@ -317,7 +317,7 @@ export function SearchBar({
       onSubmit={form.handleSubmit(onSubmit)}
       className="m-auto w-full pb-12 md:max-w-3xl"
     >
-      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-2 shadow-lg sm:h-20 sm:flex-row">
+      <div className="flex w-full flex-1 flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg sm:h-20 sm:flex-row">
         <Controller
           name="destination"
           control={form.control}
