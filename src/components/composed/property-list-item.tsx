@@ -4,6 +4,24 @@ import { Star } from "lucide-react";
 import { Property } from "@/validators/property";
 import { currency } from "@/lib/formats";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function PropertyListItemSkeleton() {
+  return (
+    <div>
+      <Skeleton className="aspect-square overflow-hidden rounded-xl" />
+      <div className="pt-4">
+        <div className="mb-2 flex items-center justify-between">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="h-5 w-14" />
+        </div>
+        <Skeleton className="mb-2 h-6 w-52" />
+        <Skeleton className="h-5 w-32" />
+      </div>
+    </div>
+  );
+}
+
 export function PropertyListItem({ property }: { property: Property }) {
   return (
     <Link
