@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const PropertySchema = z.object({
+export const PropertySchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
   description: z.string(),
