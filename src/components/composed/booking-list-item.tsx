@@ -1,9 +1,22 @@
+import * as React from "react";
 import { format } from "date-fns";
 import { MoreVertical } from "lucide-react";
+import { toast } from "sonner";
 
 import { Booking } from "@/validators/booking";
 import { currency } from "@/lib/formats";
+import { useCancelBooking } from "@/hooks/use-mutations";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,6 +47,20 @@ export function BookingListItem({
   booking: Booking;
   isEditable?: boolean;
 }) {
+  const [isCancelAlertOpen, setCancelAlertOpen] = React.useState(false);
+
+  const cancelMutation = useCancelBooking();
+
+  function onCancel() {
+    const promise = cancelMutation.mutateAsync(booking.id);
+
+    toast.promise(promise, {
+      loading: "Canceling your reservation...",
+      success: () => "Your reservation has been canceled!",
+      error: cancelMutation.error?.message,
+    });
+  }
+
   return (
     <div className="flex gap-x-2.5 rounded-xl p-2.5 transition-colors hover:bg-white has-[button[data-state='open']]:bg-white">
       <div className="aspect-square w-28 overflow-hidden rounded-xl">
@@ -70,19 +97,45 @@ export function BookingListItem({
         </div>
 
         {isEditable && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" size="icon" variant="ghost">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-400 focus:text-red-500">
-                Cancel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" size="icon" variant="ghost">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setCancelAlertOpen(true)}
+                  className="text-red-400 focus:text-red-500"
+                >
+                  Cancel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <AlertDialog
+              open={isCancelAlertOpen}
+              onOpenChange={setCancelAlertOpen}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone and will permanently cancel
+                    this reservation.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={onCancel}>
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
         )}
       </div>
     </div>

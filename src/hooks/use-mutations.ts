@@ -1,18 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { areIntervalsOverlapping } from "date-fns";
 
 import { CreateBooking, UpdateBooking } from "@/validators/booking";
 import { delay } from "@/lib/utils";
 
 import { useGlobalStore } from "./use-global-store";
+import { queryKeys } from "./use-queries";
 
 export function useCreateBooking() {
   const { bookings, createBooking } = useGlobalStore();
 
   async function mutationFn(data: CreateBooking) {
-    // Simulate API request
-    await delay();
-
     const booking = bookings.find(
       ({ property }) => property.id === data.propertyId,
     );
@@ -29,6 +27,9 @@ export function useCreateBooking() {
       }
     }
 
+    // Simulate API request
+    await delay();
+
     createBooking(data);
   }
 
@@ -41,9 +42,6 @@ export function useUpdateBooking() {
   const { bookings, updateBooking } = useGlobalStore();
 
   async function mutationFn({ id, data }: { id: string; data: UpdateBooking }) {
-    // Simulate API request
-    await delay();
-
     const booking = bookings.find(
       ({ property }) => property.id === data.propertyId,
     );
@@ -60,7 +58,30 @@ export function useUpdateBooking() {
       }
     }
 
+    // Simulate API request
+    await delay();
+
     updateBooking(id, data);
+  }
+
+  return useMutation({
+    mutationFn,
+  });
+}
+
+export function useCancelBooking() {
+  const queryClient = useQueryClient();
+  const { deleteBooking } = useGlobalStore();
+
+  async function mutationFn(id: string) {
+    deleteBooking(id);
+
+    // Simulate API request
+    await delay();
+
+    queryClient.refetchQueries({
+      queryKey: [queryKeys.getBookings],
+    });
   }
 
   return useMutation({
