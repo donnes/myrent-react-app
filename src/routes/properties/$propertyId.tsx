@@ -105,7 +105,13 @@ function BookingBox({ property }: { property: Property }) {
           name="dates"
           control={form.control}
           render={({ field }) => (
-            <RangeDatesControl value={field.value} onChange={field.onChange} />
+            <RangeDatesControl
+              value={{
+                from: new Date(field.value.from),
+                to: new Date(field.value.to),
+              }}
+              onChange={field.onChange}
+            />
           )}
         />
         <Controller

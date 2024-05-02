@@ -8,8 +8,8 @@ export const BookingSchema = z.object({
   id: z.string().uuid(),
   property: PropertySchema,
   dates: z.object({
-    from: z.date(),
-    to: z.date(),
+    from: z.date().or(z.string()),
+    to: z.date().or(z.string()),
   }),
   guests: z.number().min(1).max(10),
   totalPrice: z.number(),

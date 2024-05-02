@@ -23,7 +23,11 @@ export const useGlobalStore = create<GlobalState>()(
 
         return set((state) => ({
           bookings: [
-            { id: uuidv4(), property, ...newBooking },
+            {
+              id: uuidv4(),
+              property,
+              ...newBooking,
+            },
             ...state.bookings,
           ],
         }));
