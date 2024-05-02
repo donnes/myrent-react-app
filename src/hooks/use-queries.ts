@@ -3,15 +3,12 @@ import { differenceInDays } from "date-fns";
 
 import { properties } from "@/fixtures/data";
 import { Property, PropertySearch } from "@/validators/property";
+import { delay } from "@/lib/utils";
 
 export const queryKeys = {
   getProperties: "get-properties",
   getProperty: "get-property",
 };
-
-// Simulate API round trip latency
-const delay = async () =>
-  new Promise((r) => setTimeout(r, Math.round(Math.random() * 500)));
 
 export function useGetProperties(
   params?: Partial<PropertySearch>,
