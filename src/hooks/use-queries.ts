@@ -5,9 +5,12 @@ import { properties } from "@/fixtures/data";
 import { Property, PropertySearch } from "@/validators/property";
 import { delay } from "@/lib/utils";
 
+import { useGlobalStore } from "./use-global-store";
+
 export const queryKeys = {
   getProperties: "get-properties",
   getProperty: "get-property",
+  getBookings: "get-bookings",
 };
 
 export function useGetProperties(
@@ -15,8 +18,10 @@ export function useGetProperties(
   options?: UseQueryOptions<Array<Property>>,
 ) {
   async function queryFn() {
+    // Simulate API request
     await delay();
 
+    // Simulate API query parameters
     if (params && params.startDate && params.endDate) {
       const nights = differenceInDays(params.endDate, params.startDate);
 
@@ -54,12 +59,30 @@ export function useGetProperties(
 
 export function useGetProperty(id: string) {
   async function queryFn() {
+    // Simulate API request
     await delay();
+
     return properties.find((p) => p.id === id);
   }
 
   return useQuery({
     queryKey: [queryKeys.getProperty, id],
+    queryFn,
+  });
+}
+
+export function useGetBookings() {
+  const { bookings } = useGlobalStore();
+
+  async function queryFn() {
+    // Simulate API request
+    await delay();
+
+    return bookings;
+  }
+
+  return useQuery({
+    queryKey: [queryKeys.getBookings],
     queryFn,
   });
 }
