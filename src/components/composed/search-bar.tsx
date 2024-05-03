@@ -223,9 +223,9 @@ export function GuestsControl({
   return (
     <label className="flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
       <Users className="mr-2 h-6 w-6 text-zinc-600" />
-      <div className="flex-1">
-        <span className="pb-1 text-sm font-medium leading-none">Guests</span>
-        <div className="flex items-center">
+      <div className="flex flex-1">
+        <div className="flex-1 gap-1">
+          <span className="pb-1 text-sm font-medium leading-none">Guests</span>
           <input
             type="number"
             className={cn(
@@ -244,27 +244,27 @@ export function GuestsControl({
             }}
             placeholder="0"
           />
+        </div>
 
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              className="h-6 w-6"
-              onClick={onDecrement}
-              variant="outline"
-              size="icon"
-            >
-              <Minus className="h-3 w-3" />
-            </Button>
-            <Button
-              type="button"
-              className="h-6 w-6"
-              onClick={onIncrement}
-              variant="outline"
-              size="icon"
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          </div>
+        <div className="flex items-end gap-1">
+          <Button
+            type="button"
+            className="h-8 w-8 md:h-6 md:w-6"
+            onClick={onDecrement}
+            variant="outline"
+            size="icon"
+          >
+            <Minus className="h-4 w-4 md:h-3 md:w-3" />
+          </Button>
+          <Button
+            type="button"
+            className="h-8 w-8 md:h-6 md:w-6"
+            onClick={onIncrement}
+            variant="outline"
+            size="icon"
+          >
+            <Plus className="h-4 w-4 md:h-3 md:w-3" />
+          </Button>
         </div>
       </div>
     </label>
