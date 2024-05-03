@@ -1,3 +1,5 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
@@ -12,17 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: [
-          "Roboto Mono",
-          "ui-monospace",
-          "SFMono-Regular",
-          "Menlo",
-          "Monaco",
-          "Consolas",
-          "Liberation Mono",
-          "Courier New",
-          "monospace",
-        ],
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        mono: ["Roboto Mono", ...defaultTheme.fontFamily.mono],
       },
     },
   },
