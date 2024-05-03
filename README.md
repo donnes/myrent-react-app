@@ -66,3 +66,5 @@ bun run dev
 bun run dev
 bun cy:run
 ```
+
+![Tests](./screenshots/tests.png)
