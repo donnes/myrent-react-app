@@ -41,7 +41,6 @@ export function LocationControl({
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const [isOpen, setOpen] = React.useState(false);
   const [isSearching, setSearching] = React.useState(false);
 
   const handleKeyDown = React.useCallback(
@@ -51,14 +50,7 @@ export function LocationControl({
         return;
       }
 
-      // Keep the listing displayed when the user is typing
-      if (!isOpen) {
-        setOpen(true);
-      }
-
-      if (input.value !== "" && input.value !== value) {
-        setSearching(true);
-      }
+      setSearching(true);
 
       // This is not a default behaviour of the <input /> field
       if (event.key === "Enter" && input.value !== "") {
@@ -76,7 +68,7 @@ export function LocationControl({
         setSearching(false);
       }
     },
-    [inputRef, value, isOpen, onChange],
+    [inputRef, onChange],
   );
 
   const handleSelectOption = React.useCallback(
@@ -93,7 +85,7 @@ export function LocationControl({
   );
 
   return (
-    <label className="relative flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
+    <label className="group relative flex flex-1 cursor-pointer items-center rounded-xl p-2 transition-colors hover:bg-zinc-100 has-[:focus-visible]:bg-zinc-100">
       <Search className="mr-2 h-6 w-6 text-zinc-600" />
       <div className="flex-1">
         <span className="pb-1 text-sm font-medium leading-none">
@@ -105,37 +97,34 @@ export function LocationControl({
               ref={inputRef}
               value={value}
               onChange={(e) => onChange?.(e.target.value)}
-              onBlur={() => setOpen(false)}
-              onFocus={() => setOpen(true)}
+              onBlur={() => setSearching(false)}
               className="flex h-6 w-full border-0 bg-transparent p-0 text-sm font-normal text-zinc-900 ring-0 placeholder:text-zinc-400 focus-visible:outline-none"
               placeholder="New York"
             />
-            {isOpen ? (
-              <div className="animate-in fade-in-0 zoom-in-95 absolute left-0 top-[66px] z-10 w-full rounded-md border border-zinc-200 bg-white shadow-md outline-none">
-                <CommandList className="max-h-[305px] p-1.5">
-                  {destinations
-                    .filter(({ label }) =>
-                      isSearching ? label.includes(value ?? "") : true,
-                    )
-                    .map((destination) => {
-                      return (
-                        <CommandItem
-                          key={destination.key}
-                          value={destination.label}
-                          onMouseDown={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                          }}
-                          onSelect={() => handleSelectOption(destination.label)}
-                          className="flex w-full items-center gap-2 rounded-md"
-                        >
-                          {destination.label}
-                        </CommandItem>
-                      );
-                    })}
-                </CommandList>
-              </div>
-            ) : null}
+            <div className="animate-in fade-in-0 zoom-in-95 invisible absolute left-0 top-[66px] z-50 w-full rounded-md border border-zinc-200 bg-white opacity-0 shadow-md outline-none transition-all group-focus-within:visible group-focus-within:opacity-100">
+              <CommandList className="max-h-[305px] p-1.5">
+                {destinations
+                  .filter(({ label }) =>
+                    isSearching ? label.includes(value ?? "") : true,
+                  )
+                  .map((destination) => {
+                    return (
+                      <CommandItem
+                        key={destination.key}
+                        value={destination.label}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                        onSelect={() => handleSelectOption(destination.label)}
+                        className="flex w-full items-center gap-2 rounded-md"
+                      >
+                        {destination.label}
+                      </CommandItem>
+                    );
+                  })}
+              </CommandList>
+            </div>
           </CommandPrimitive>
         </div>
       </div>
