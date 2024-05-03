@@ -40,7 +40,7 @@ function PropertyPageSkeleton() {
           </div>
         </div>
 
-        <Skeleton className="h-96 w-80" />
+        <Skeleton className="hidden h-96 w-80 md:flex" />
       </div>
     </div>
   );
