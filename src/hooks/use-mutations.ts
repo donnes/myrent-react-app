@@ -1,17 +1,17 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { areIntervalsOverlapping } from "date-fns";
 
 import { BookingForm } from "@/validators/booking";
-import { delay } from "@/lib/utils";
 
 import { useGlobalStore } from "./use-global-store";
-import { queryKeys } from "./use-queries";
 
 export function useCreateBooking() {
-  const queryClient = useQueryClient();
   const { bookings, createBooking } = useGlobalStore();
 
   async function mutationFn(data: BookingForm) {
+    // In a real-world scenario
+    // those validations would be made in the backend
+
     const dataInterval = { start: data.dates.from, end: data.dates.to };
 
     const overlappingBookings = bookings.filter(({ dates }) => {
@@ -27,14 +27,8 @@ export function useCreateBooking() {
       throw new Error("Date range already booked.");
     }
 
+    // In a real-world scenario, it would be a API request
     createBooking(data);
-
-    // Simulate API request
-    await delay();
-
-    queryClient.refetchQueries({
-      queryKey: [queryKeys.getBookings],
-    });
   }
 
   return useMutation({
@@ -43,10 +37,12 @@ export function useCreateBooking() {
 }
 
 export function useUpdateBooking() {
-  const queryClient = useQueryClient();
   const { bookings, updateBooking } = useGlobalStore();
 
   async function mutationFn({ id, data }: { id: string; data: BookingForm }) {
+    // In a real-world scenario
+    // those validations would be made in the backend
+
     const dataInterval = { start: data.dates.from, end: data.dates.to };
 
     // As we're updating a booking
@@ -67,14 +63,8 @@ export function useUpdateBooking() {
       throw new Error("Date range already booked.");
     }
 
+    // In a real-world scenario, it would be a API request
     updateBooking(id, data);
-
-    // Simulate API request
-    await delay();
-
-    queryClient.refetchQueries({
-      queryKey: [queryKeys.getBookings],
-    });
   }
 
   return useMutation({
@@ -83,18 +73,11 @@ export function useUpdateBooking() {
 }
 
 export function useCancelBooking() {
-  const queryClient = useQueryClient();
   const { deleteBooking } = useGlobalStore();
 
   async function mutationFn(id: string) {
+    // In a real-world scenario, it would be a API request
     deleteBooking(id);
-
-    // Simulate API request
-    await delay();
-
-    queryClient.refetchQueries({
-      queryKey: [queryKeys.getBookings],
-    });
   }
 
   return useMutation({

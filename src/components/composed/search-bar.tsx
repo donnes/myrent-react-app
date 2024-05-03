@@ -111,7 +111,7 @@ export function LocationControl({
               placeholder="New York"
             />
             {isOpen ? (
-              <div className="animate-in fade-in-0 zoom-in-95 absolute top-[66px] z-10 w-full rounded-md border border-zinc-200 bg-white shadow-md outline-none">
+              <div className="animate-in fade-in-0 zoom-in-95 absolute left-0 top-[66px] z-10 w-full rounded-md border border-zinc-200 bg-white shadow-md outline-none">
                 <CommandList className="max-h-[305px] p-1.5">
                   {destinations
                     .filter(({ label }) =>

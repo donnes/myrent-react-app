@@ -5,12 +5,9 @@ import { properties } from "@/fixtures/data";
 import { Property, PropertySearch } from "@/validators/property";
 import { delay } from "@/lib/utils";
 
-import { useGlobalStore } from "./use-global-store";
-
 export const queryKeys = {
   getProperties: "get-properties",
   getProperty: "get-property",
-  getBookings: "get-bookings",
 };
 
 export function useGetProperties(
@@ -67,22 +64,6 @@ export function useGetProperty(id: string) {
 
   return useQuery({
     queryKey: [queryKeys.getProperty, id],
-    queryFn,
-  });
-}
-
-export function useGetBookings() {
-  const { bookings } = useGlobalStore();
-
-  async function queryFn() {
-    // Simulate API request
-    await delay();
-
-    return bookings;
-  }
-
-  return useQuery({
-    queryKey: [queryKeys.getBookings],
     queryFn,
   });
 }

@@ -2,54 +2,35 @@ import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAfter, isBefore } from "date-fns";
 
-import { useGetBookings } from "@/hooks/use-queries";
+import { useGlobalStore } from "@/hooks/use-global-store";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  BookingListItem,
-  BookingListItemSkeleton,
-} from "@/components/composed/booking-list-item";
+import { BookingListItem } from "@/components/composed/booking-list-item";
 
 export const Route = createFileRoute("/bookings")({
   component: BookingsPage,
 });
 
-function BookingsPageSkeleton() {
-  return (
-    <div className="container max-w-screen-xl py-8">
-      <Skeleton className="mb-6 h-8 w-64" />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <BookingListItemSkeleton key={`BookingListItemSkeleton-${index}`} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function BookingsPage() {
-  const bookings = useGetBookings();
+  const { bookings } = useGlobalStore();
 
   const incomingBookings = React.useMemo(() => {
-    if (!bookings.data?.length) return [];
+    if (!bookings.length) return [];
 
-    return bookings.data.filter(({ dates }) =>
+    return bookings.filter(({ dates }) =>
       isBefore(new Date(), new Date(dates.from)),
     );
-  }, [bookings.data]);
+  }, [bookings]);
 
   const pastBookings = React.useMemo(() => {
-    if (!bookings.data?.length) return [];
+    if (!bookings.length) return [];
 
-    return bookings.data.filter(({ dates }) =>
+    return bookings.filter(({ dates }) =>
       isAfter(new Date(), new Date(dates.from)),
     );
-  }, [bookings.data]);
+  }, [bookings]);
 
-  if (bookings.isLoading) return <BookingsPageSkeleton />;
-
-  if (!bookings.data?.length) {
+  if (!bookings.length) {
     return (
       <div className="container max-w-screen-xl py-16">
         <div className="flex flex-col items-center justify-center">
